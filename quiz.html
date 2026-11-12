@@ -116,7 +116,6 @@
       background-color: #4f46e5;
     }
 
-    /* Ecrã de Resultados */
     .result-screen {
       text-align: center;
       display: none;
@@ -156,7 +155,6 @@
   <div class="quiz-container">
     <h1>🧠 Desafio de Cultura Geral</h1>
     
-    <!-- Caixa do Quiz -->
     <div id="quiz-box">
       <div class="progress-bar">
         <div class="progress" id="progressBar"></div>
@@ -166,7 +164,6 @@
       <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Seguinte Pergunta</button>
     </div>
 
-    <!-- Ecrã de Fim de Jogo -->
     <div class="result-screen" id="resultScreen">
       <h2>Quiz Concluído! 🎉</h2>
       <p id="finalScoreText">Acertaste X em 20 perguntas.</p>
@@ -299,7 +296,6 @@
       const currentQ = questions[currentQuestionIndex];
       questionText.textContent = `${currentQuestionIndex + 1}. ${currentQ.question}`;
       
-      // Atualizar barra de progresso
       const progressPercent = ((currentQuestionIndex) / questions.length) * 100;
       progressBar.style.width = `${progressPercent}%`;
 
@@ -328,7 +324,6 @@
         allButtons[currentQ.correct].classList.add("correct");
       }
 
-      // Desativar todos os botões após a resposta
       for (let btn of allButtons) {
         btn.disabled = true;
       }
@@ -371,7 +366,6 @@
       loadQuestion();
     }
 
-    // Iniciar o quiz pela primeira vez
     loadQuestion();
   </script>
 
