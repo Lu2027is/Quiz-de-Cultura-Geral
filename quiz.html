@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz de Cultura Geral - Desafio Supremo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e1b4b);
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .quiz-container {
+      background-color: #1e293b;
+      width: 100%;
+      max-width: 650px;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      border: 1px solid #334155;
+    }
+
+    h1 {
+      text-align: center;
+      color: #818cf8;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      background-color: #0f172a;
+      height: 10px;
+      border-radius: 5px;
+      margin-bottom: 25px;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      background-color: #6366f1;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .question-box {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .option-btn {
+      background-color: #0f172a;
+      color: #e2e8f0;
+      border: 1px solid #475569;
+      padding: 12px 18px;
+      border-radius: 8px;
+      text-align: left;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background-color: #334155;
+      border-color: #818cf8;
+    }
+
+    .option-btn.correct {
+      background-color: #059669 !important;
+      border-color: #10b981 !important;
+      color: white;
+    }
+
+    .option-btn.wrong {
+      background-color: #dc2626 !important;
+      border-color: #ef4444 !important;
+      color: white;
+    }
+
+    .next-btn {
+      display: none;
+      width: 100%;
+      background-color: #6366f1;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .next-btn:hover {
+      background-color: #4f46e5;
+    }
+
+    /* Ecrã de Resultados */
+    .result-screen {
+      text-align: center;
+      display: none;
+    }
+
+    .result-screen h2 {
+      font-size: 2rem;
+      color: #34d399;
+      margin-bottom: 15px;
+    }
+
+    .result-screen p {
+      font-size: 1.1rem;
+      color: #94a3b8;
+      margin-bottom: 25px;
+    }
+
+    .restart-btn {
+      background-color: #6366f1;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .restart-btn:hover {
+      background-color: #4f46e5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-container">
+    <h1>🧠 Desafio de Cultura Geral</h1>
+    
+    <!-- Caixa do Quiz -->
+    <div id="quiz-box">
+      <div class="progress-bar">
+        <div class="progress" id="progressBar"></div>
+      </div>
+      <div class="question-box" id="questionText">A carregar pergunta...</div>
+      <div class="options-list" id="optionsList"></div>
+      <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Seguinte Pergunta</button>
+    </div>
+
+    <!-- Ecrã de Fim de Jogo -->
+    <div class="result-screen" id="resultScreen">
+      <h2>Quiz Concluído! 🎉</h2>
+      <p id="finalScoreText">Acertaste X em 20 perguntas.</p>
+      <p id="evaluationText" style="color: #f8fafc; font-weight: 500; margin-bottom: 30px;"></p>
+      <button class="restart-btn" onclick="restartQuiz()">Tentar Novamente</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "Qual é o planeta mais próximo do Sol?",
+        options: ["Vénus", "Mercúrio", "Terra", "Marte"],
+        correct: 1
+      },
+      {
+        question: "Em que ano terminou a Segunda Guerra Mundial?",
+        options: ["1942", "1945", "1950", "1939"],
+        correct: 1
+      },
+      {
+        question: "Qual é o país com maior população do mundo?",
+        options: ["Índia", "Estados Unidos", "China", "Rússia"],
+        correct: 0
+      },
+      {
+        question: "Quem pintou a 'Mona Lisa'?",
+        options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"],
+        correct: 2
+      },
+      {
+        question: "Qual é o elemento químico representado pelo símbolo 'Au'?",
+        options: ["Prata", "Ouro", "Cobre", "Alumínio"],
+        correct: 1
+      },
+      {
+        question: "Qual é o oceano mais largo do planeta Terra?",
+        options: ["Oceano Atlântico", "Oceano Índico", "Oceano Ártico", "Oceano Pacífico"],
+        correct: 3
+      },
+      {
+        question: "Quantos ossos tem o corpo humano adulto?",
+        options: ["206", "198", "215", "180"],
+        correct: 0
+      },
+      {
+        question: "Qual é a capital da Austrália?",
+        options: ["Sydney", "Melbourne", "Canberra", "Perth"],
+        correct: 2
+      },
+      {
+        question: "Quem escreveu a peça 'Romeu e Julieta'?",
+        options: ["Luís de Camões", "William Shakespeare", "Fernando Pessoa", "Victor Hugo"],
+        correct: 1
+      },
+      {
+        question: "Qual é a montanha mais alta do mundo?",
+        options: ["K2", "Monte Branco", "Monte Everest", "Kilimanjaro"],
+        correct: 2
+      },
+      {
+        question: "Em que continente fica o deserto do Saara?",
+        options: ["Ásia", "América do Sul", "África", "Oceania"],
+        correct: 2
+      },
+      {
+        question: "Qual é a velocidade aproximada da luz no vácuo?",
+        options: ["300.000 km/s", "150.000 km/s", "1.080 km/s", "3.000.000 km/s"],
+        correct: 0
+      },
+      {
+        question: "Qual foi o país que ofereceu a Estátua da Liberdade aos Estados Unidos?",
+        options: ["Reino Unido", "França", "Espanha", "Itália"],
+        correct: 1
+      },
+      {
+        question: "Qual é o maior mamífero do planeta?",
+        options: ["Elefante-africano", "Tubarão-baleia", "Baleia-azul", "Girafa"],
+        correct: 2
+      },
+      {
+        question: "Quantas cores tem o arco-íris tradicional?",
+        options: ["5", "6", "7", "8"],
+        correct: 2
+      },
+      {
+        question: "Qual é a língua mais falada no mundo como primeira língua?",
+        options: ["Inglês", "Mandarim", "Espanhol", "Hindi"],
+        correct: 1
+      },
+      {
+        question: "Em que ano o homem pisou a Lua pela primeira vez?",
+        options: ["1965", "1969", "1972", "1958"],
+        correct: 1
+      },
+      {
+        question: "Qual é o símbolo químico da água?",
+        options: ["CO2", "O2", "H2O", "NaCl"],
+        correct: 2
+      },
+      {
+        question: "Qual é o país conhecido como a 'Terra do Sol Nascente'?",
+        options: ["China", "Coreia do Sul", "Tailândia", "Japão"],
+        correct: 3
+      },
+      {
+        question: "Quem descobriu o Brasil em 1500?",
+        options: ["Cristovão Colombo", "Vasco da Gama", "Pedro Álvares Cabral", "Fernão de Magalhães"],
+        correct: 2
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    const questionText = document.getElementById("questionText");
+    const optionsList = document.getElementById("optionsList");
+    const nextBtn = document.getElementById("nextBtn");
+    const progressBar = document.getElementById("progressBar");
+    const quizBox = document.getElementById("quiz-box");
+    const resultScreen = document.getElementById("resultScreen");
+    const finalScoreText = document.getElementById("finalScoreText");
+    const evaluationText = document.getElementById("evaluationText");
+
+    function loadQuestion() {
+      answered = false;
+      nextBtn.style.display = "none";
+      
+      const currentQ = questions[currentQuestionIndex];
+      questionText.textContent = `${currentQuestionIndex + 1}. ${currentQ.question}`;
+      
+      // Atualizar barra de progresso
+      const progressPercent = ((currentQuestionIndex) / questions.length) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+
+      optionsList.innerHTML = "";
+      currentQ.options.forEach((option, index) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.textContent = option;
+        btn.onclick = () => selectOption(index, btn);
+        optionsList.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex, selectedBtn) {
+      if (answered) return;
+      answered = true;
+
+      const currentQ = questions[currentQuestionIndex];
+      const allButtons = optionsList.children;
+
+      if (selectedIndex === currentQ.correct) {
+        selectedBtn.classList.add("correct");
+        score++;
+      } else {
+        selectedBtn.classList.add("wrong");
+        allButtons[currentQ.correct].classList.add("correct");
+      }
+
+      // Desativar todos os botões após a resposta
+      for (let btn of allButtons) {
+        btn.disabled = true;
+      }
+
+      nextBtn.style.display = "block";
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      quizBox.style.display = "none";
+      resultScreen.style.display = "block";
+      finalScoreText.textContent = `Acertaste ${score} em ${questions.length} perguntas.`;
+
+      let evaluation = "";
+      if (score === 20) {
+        evaluation = "🏆 Perfeito! És uma verdadeira enciclopédia ambulante!";
+      } else if (score >= 15) {
+        evaluation = "🌟 Excelente trabalho! Tens uma cultura geral brilhante.";
+      } else if (score >= 10) {
+        evaluation = "👍 Bom resultado! Sabes bastante, mas ainda podes explorar mais.";
+      } else {
+        evaluation = "📚 Continua a estudar e a ler! Da próxima vez vais conseguir um resultado ainda melhor.";
+      }
+      evaluationText.textContent = evaluation;
+    }
+
+    function restartQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      resultScreen.style.display = "none";
+      quizBox.style.display = "block";
+      loadQuestion();
+    }
+
+    // Iniciar o quiz pela primeira vez
+    loadQuestion();
+  </script>
+
+</body>
+</html>
